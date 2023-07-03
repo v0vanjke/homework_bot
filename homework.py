@@ -21,7 +21,7 @@ HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 HOMEWORK_VERDICTS = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'reviewing': 'Работа взята на проверку ревьюером.',
-    'rejected': 'Работа проверена: у ревьюера есть замечания.'
+    'rejected': 'Работа проверена: у ревьюера есть замечания.',
 }
 
 logger = logging.getLogger()
@@ -47,7 +47,7 @@ def check_tokens():
             if value is None or not value:
                 logging.critical(
                     f'Отсутствие обязательных переменных окружения:'
-                    f'{token} = {value}'
+                    f'{token} = {value}.'
                 )
         sys.exit()
 
@@ -66,7 +66,7 @@ def send_message(bot, message):
 
 def get_api_answer(timestamp):
     """Получаем ответ от API."""
-    message = 'Ошибка при запросе к API, статус: {}'
+    message = 'Ошибка при запросе к API, статус: {}.'
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=timestamp)
         if response.status_code == HTTPStatus.NO_CONTENT:
@@ -91,7 +91,7 @@ def check_response(response):
                 logging.error('Словарь "homeworks" не содержит список.')
                 raise TypeError('Словарь "homeworks" не содержит список.')
         except KeyError('homeworks'):
-            logging.error('В cловаре ответа API нет ключа "homeworks"')
+            logging.error('В cловаре ответа API нет ключа "homeworks".')
 
 
 def parse_status(homework):
@@ -105,7 +105,7 @@ def parse_status(homework):
         if previous_status != homework['status']:
             previous_status = homework['status']
             return message
-        logging.debug('Статус проверки работы не изменился')
+        logging.debug('Статус проверки работы не изменился.')
         return message
     except KeyError('homework_name'):
         reason = 'Отсутствует ключ "homework_name".'
@@ -126,7 +126,7 @@ def main():
             homework = response['homeworks'][0]
             send_message(bot, parse_status(homework))
         except Exception as error:
-            message = f'Сбой в работе программы: {error}.'
+            message = f'Сбой в работе программы: {error}'
             logging.error(message)
             send_message(bot, message)
         time.sleep(RETRY_PERIOD)
