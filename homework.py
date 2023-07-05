@@ -65,7 +65,7 @@ def get_api_answer(payload):
         f'\nparams = {payload}'
     )
     try:
-        logging.debug(f'Отправляем запрос к API.')
+        logging.debug('Отправляем запрос к API.')
         response = requests.get(ENDPOINT, headers=HEADERS, params=payload)
         logging.debug('Ответ от API получен.')
         if response.status_code != HTTPStatus.OK:
@@ -90,6 +90,7 @@ def check_response(response):
     except KeyError as error:
         logging.error(f'В cловаре ответа API нет ключа "{error.args[0]}".')
         raise KeyError(error)
+
 
 def parse_status(homework):
     """Проверяем, что статус работы изменился, готовим сообщение для бота."""
