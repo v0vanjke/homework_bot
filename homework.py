@@ -118,16 +118,13 @@ def main():
             check_response(response)
             homework = response['homeworks'][0]
             if homework != previous_homework:
-                previous_homework = homework
                 message = parse_status(homework)
+                if message != last_message:
+                    if send_message(bot, message) != 'failed':
+                        last_message = message
+                        previous_homework = homework
             else:
                 logging.debug('Статус проверки работы не изменился.')
-            if message != last_message:
-                if send_message(bot, message) == 'failed':
-                    last_message = ''
-                    previous_homework = ''
-                else:
-                    last_message = message
         except Exception as error:
             send_message(bot, f'Сбой в работе программы: {error}')
         time.sleep(RETRY_PERIOD)
