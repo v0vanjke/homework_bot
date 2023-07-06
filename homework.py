@@ -31,8 +31,6 @@ formatter = logging.Formatter('%(asctime)s --- %(levelname)s --- %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-previous_status = ''
-
 
 def check_tokens():
     """Проверяем наличие всех токенов в .env."""
@@ -54,6 +52,7 @@ def send_message(bot, message):
         logging.debug(f'Сообщение "{message}" успешно отправлено.')
     except Exception as error:
         logging.error(f'Сбой при отправке сообщения в Telegram: {error}.')
+        return 'failed'
 
 
 def get_api_answer(payload):
@@ -108,13 +107,13 @@ def parse_status(homework):
 def main():
     """Основная логика работы бота."""
     check_tokens()
-    timestamp = int(time.time())
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     last_message = ''
     previous_homework = ''
+    timestamp = int(time.time())
+    payload = {'from_date': timestamp}
     while True:
         try:
-            payload = {'from_date': timestamp}
             response = get_api_answer(payload)
             check_response(response)
             homework = response['homeworks'][0]
@@ -124,11 +123,13 @@ def main():
             else:
                 logging.debug('Статус проверки работы не изменился.')
             if message != last_message:
-                send_message(bot, message)
-                last_message = message
+                if send_message(bot, message) == 'failed':
+                    last_message = ''
+                    previous_homework = ''
+                else:
+                    last_message = message
         except Exception as error:
-            message = f'Сбой в работе программы: {error}'
-            send_message(bot, message)
+            send_message(bot, f'Сбой в работе программы: {error}')
         time.sleep(RETRY_PERIOD)
 
 
